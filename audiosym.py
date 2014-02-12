@@ -2,16 +2,30 @@ import sunau
 import math
 import audioop
 
-def muOperation (x):
-    if x<0:
-        sign = -1
-    else:
-        sign = 1
-    muValue = sign * math.log(1+255*abs(x)) / math.log(1+255)
-    return muValue
 
-def muOperation2 (x):
-    return audioop.lin2ulaw(x, 1)
+muValueList =[0,0,1,1,2,2,2,2,3,3,3,3,3,3,3,3, 
+     4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,
+     5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,
+     5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,
+     6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,
+     6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,
+     6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,
+     6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,
+     7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,
+     7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,
+     7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,
+     7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,
+     7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,
+     7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,
+     7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,
+     7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7]
+
+
+def normalize(x):
+    threshold = 2*16-1
+    normalizedValue = (x-(threshold/2))/(threshold/2)
+    return normalizedValue
+    
 
 
 
@@ -24,29 +38,33 @@ print (w.getnchannels(), "channels")
 print (w.getcomptype(),w.getcompname())
 
 nframes = math.floor(w.getnframes())
-
-k = sunau.open("soundfiles/whatYouFeel2.au", "w")
-k.setnchannels(w.getnchannels())
-k.setframerate(w.getframerate())
-k.setsampwidth(w.getsampwidth())
-k.setnframes(w.getnframes())
-k.setcomptype(w.getcomptype(),w.getcompname())
-
 audiostring = w.readframes(nframes)
-#k.writeframes(audiostring)
 
-list3 = audioop.lin2lin(audiostring, 2, 1)
+audiolist = []
+for l in audiostring:
+    audiolist.append(l)
 
-m = sunau.open("soundfiles/whatYouFeel3.au", "w")
-m.setnchannels(w.getnchannels())
-m.setframerate(w.getframerate())
-m.setsampwidth(1)
-m.setcomptype('ULAW', w.getcompname())
-m.writeframes(list3)
+uLawAudio = audioop.lin2ulaw(audiostring, 1)
 
-list4 = audioop.lin2lin(list3, 1, 2)
-k.writeframes(list4)
+ulist = []
+for i in uLawAudio:
+    ulist.append(i)
 
+for i in range(60060, 60100):
+    print(ulist[i], audiolist[i])
+
+k = sunau.open("soundfiles/whatYouFeel2.au","w")
+
+k.setsampwidth(w.getsampwidth())
+k.setframerate(w.getframerate())
+k.setcomptype(w.getcomptype(),w.getcompname())
+k.setnchannels(w.getnchannels())
+
+recodedaudio = audioop.ulaw2lin(uLawAudio, 1)
+
+k.writeframes(recodedaudio)
+
+j= sunau.open("soundfiles/whatYouFeel3.au","w")
 
 
 
